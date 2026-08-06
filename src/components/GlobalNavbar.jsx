@@ -5,7 +5,7 @@ export default function GlobalNavbar() {
 
   return (
     <nav className="bg-purple-700 fixed w-full z-20 top-0 left-0 border-b border-transparent">
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+      <div className=" flex flex-wrap items-center justify-between  p-6">
         <a href="/" className="flex items-center space-x-3">
           <span className="self-center text-xl text-white font-semibold whitespace-nowrap"style={{ fontFamily: '"Papyrus", fantasy' }}> 🌼 EarlyBloom</span>
         </a>
@@ -13,9 +13,16 @@ export default function GlobalNavbar() {
         <div className="flex md:order-2 space-x-3 md:space-x-0">
           <button
             type="button"
-            className="text-white bg-purple-900 hover:bg-purple-950 font-bold border-none focus:ring-4 focus:ring-purple-500 shadow-md leading-5 rounded-xl text-sm px-3 py-2 focus:outline-none"
+            className="flex items-center text-white bg-purple-900 hover:bg-purple-950 font-bold border-none focus:ring-4 focus:ring-purple-500 shadow-md leading-5 rounded-xl text-sm px-3 py-2 focus:outline-none"
           >
-            Get started
+            Get Started
+            <svg className="ml-2 h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path
+                fillRule="evenodd"
+                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                clipRule="evenodd"
+              />
+            </svg>
           </button>
           <button
             type="button"
