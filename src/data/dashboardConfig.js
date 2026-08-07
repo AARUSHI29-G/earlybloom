@@ -1,0 +1,142 @@
+export const dashboardDefinitions = {
+  volunteer: {
+    title: 'Volunteer Dashboard',
+    subtitle: 'Track visits, upload reports, and stay connected to your community impact.',
+    links: [
+      { key: 'profile', label: 'Profile', path: '/dashboard/volunteer/profile' },
+      { key: 'my-visits', label: 'My Visits', path: '/dashboard/volunteer/my-visits' },
+      { key: 'reports', label: 'Reports', path: '/dashboard/volunteer/reports' },
+      { key: 'achievements', label: 'Achievements', path: '/dashboard/volunteer/achievements' },
+      { key: 'notification', label: 'Notification', path: '/dashboard/volunteer/notification' },
+    ],
+    profile: {
+      salutation: 'Ms.',
+      name: 'Priya Sharma',
+      email: 'priya.sharma@example.org',
+      address: '24 Rosewood Lane',
+      pincode: '560034',
+      country: 'India',
+      state: 'Karnataka',
+      city: 'Bengaluru',
+    },
+    visits: {
+      upcoming: [
+        { id: 1, child: 'Aanya', location: 'Village Cluster 3', time: '10:00 AM', date: '2026-08-10' },
+        { id: 2, child: 'Ravi', location: 'Sector 7 Home', time: '2:30 PM', date: '2026-08-12' },
+        { id: 3, child: 'Mira', location: 'Community Center', time: '11:15 AM', date: '2026-08-14' },
+      ],
+      completed: [
+        { id: 4, child: 'Aarav', location: 'Village Cluster 5', time: '9:00 AM', date: '2026-08-02' },
+        { id: 5, child: 'Nisha', location: 'Field Camp', time: '1:00 PM', date: '2026-08-04' },
+        { id: 6, child: 'Kiran', location: 'Health Center', time: '3:30 PM', date: '2026-08-06' },
+      ],
+    },
+    reports: [
+      { id: 1, child: 'Aanya', feedback: 'The visit went smoothly. Caregiver engaged with milestone exercises.', date: '2026-08-10' },
+      { id: 2, child: 'Ravi', feedback: 'Focused on nutrition counseling and daily routine check-in.', date: '2026-08-12' },
+      { id: 3, child: 'Mira', feedback: 'Strong participation from family. Recommended follow-up in two weeks.', date: '2026-08-14' },
+    ],
+    achievements: [
+      { id: 1, title: '10 Visits Completed', details: 'Successfully completed ten community visits this month.' },
+      { id: 2, title: 'Trusted Volunteer', details: 'Received a "Trusted Volunteer" badge for consistent reporting.' },
+      { id: 3, title: 'Community Champion', details: 'Recognized for outstanding support in early childhood development.' },
+    ],
+    notifications: [
+      { id: 1, title: 'Field visit rescheduled', body: 'Your Tuesday home visit has been moved to Thursday at 10:00 AM.', viewed: false },
+      { id: 2, title: 'Report approved', body: 'Your latest visit report has been approved by the NGO admin.', viewed: true },
+      { id: 3, title: 'New milestone assigned', body: 'A new milestone has been added for child Aaryan.', viewed: false },
+      { id: 4, title: 'Meeting reminder', body: 'Volunteer coordination call tomorrow at 4:00 PM.', viewed: true },
+    ],
+  },
+  parent: {
+    title: 'Parent Dashboard',
+    subtitle: 'Monitor your children’s progress, milestones, and upcoming family support sessions.',
+    links: [
+      { key: 'profile', label: 'Profile', path: '/dashboard/parent/profile' },
+      { key: 'my-children', label: 'My Children', path: '/dashboard/parent/my-children' },
+      { key: 'milestone', label: 'Milestone', path: '/dashboard/parent/milestone' },
+      { key: 'visits', label: 'Visits', path: '/dashboard/parent/visits' },
+      { key: 'resources', label: 'Resources', path: '/dashboard/parent/resources' },
+      { key: 'notification', label: 'Notification', path: '/dashboard/parent/notification' },
+    ],
+    profile: {
+      salutation: 'Mrs.',
+      name: 'Ananya Verma',
+      email: 'ananya.verma@example.org',
+      address: '19 Jasmine Avenue',
+      pincode: '560041',
+      country: 'India',
+      state: 'Karnataka',
+      city: 'Mysuru',
+    },
+    children: [
+      { id: 1, name: 'Aarav', age: '4 years', milestone: 'Speech development', status: 'On track' },
+      { id: 2, name: 'Diya', age: '3 years', milestone: 'Fine motor skills', status: 'Needs review' },
+    ],
+    milestones: [
+      { id: 1, title: 'Language Check', progress: 80, notes: 'Completed early language prompts and storytelling routine.' },
+      { id: 2, title: 'Nutrition Support', progress: 65, notes: 'Healthy meal guidance shared with mother.' },
+      { id: 3, title: 'Play & Bonding', progress: 40, notes: 'Next field visit will focus on interactive playtime.' },
+    ],
+    visits: {
+      upcoming: [
+        { id: 1, child: 'Aarav', purpose: 'Growth review', date: '2026-08-11', status: 'Confirmed' },
+        { id: 2, child: 'Diya', purpose: 'Speech activity', date: '2026-08-13', status: 'Confirmed' },
+      ],
+      completed: [
+        { id: 3, child: 'Aarav', purpose: 'Nutrition check', date: '2026-08-02', status: 'Completed' },
+      ],
+    },
+    resources: [
+      { id: 1, title: 'Home Learning Kit', description: 'Printable activity cards for early literacy and counting.' },
+      { id: 2, title: 'Healthy Meal Guide', description: 'Nutrition tips for toddlers and school-aged children.' },
+      { id: 3, title: 'Parent Coaching Schedule', description: 'Weekly guidance sessions with the NGO family coach.' },
+    ],
+    notifications: [
+      { id: 1, title: 'Session confirmed', body: 'Your next home visit is scheduled for Monday at 11:00 AM.', viewed: true },
+      { id: 2, title: 'New child update', body: 'Aarav’s growth chart has been refreshed by the field worker.', viewed: false },
+    ],
+  },
+  admin: {
+    title: 'Admin Dashboard',
+    subtitle: 'Oversee volunteers, children, reports, and program analytics from one control center.',
+    links: [
+      { key: 'profile', label: 'Profile', path: '/dashboard/admin/profile' },
+      { key: 'children', label: 'Children', path: '/dashboard/admin/children' },
+      { key: 'volunteers', label: 'Volunteers', path: '/dashboard/admin/volunteers' },
+      { key: 'reports', label: 'Reports', path: '/dashboard/admin/reports' },
+      { key: 'analytics', label: 'Analytics', path: '/dashboard/admin/analytics' },
+    ],
+    profile: {
+      salutation: 'Mr.',
+      name: 'Rajesh Kumar',
+      email: 'rajesh.kumar@example.org',
+      address: '8 Lotus Boulevard',
+      pincode: '560029',
+      country: 'India',
+      state: 'Karnataka',
+      city: 'Bengaluru',
+    },
+    children: [
+      { id: 1, name: 'Aarav', age: '4', center: 'Cluster 3', status: 'Active' },
+      { id: 2, name: 'Diya', age: '3', center: 'Cluster 5', status: 'Active' },
+      { id: 3, name: 'Mira', age: '5', center: 'Community Center', status: 'Needs review' },
+    ],
+    volunteers: [
+      { id: 1, name: 'Priya Sharma', area: 'Bengaluru Rural', active: true },
+      { id: 2, name: 'Rohit Singh', area: 'Mysuru', active: true },
+      { id: 3, name: 'Neha Patel', area: 'Tumakuru', active: false },
+    ],
+    reports: [
+      { id: 1, title: 'Monthly Impact', summary: '25 new families reached this month across three districts.', date: '2026-08-01' },
+      { id: 2, title: 'Volunteer Coverage', summary: 'Volunteer visits increased by 18% versus last month.', date: '2026-08-08' },
+      { id: 3, title: 'Child Outcomes', summary: 'Early milestones improved in 72% of assessed children.', date: '2026-08-12' },
+    ],
+    analytics: [
+      { id: 1, label: 'Active Volunteers', value: '18' },
+      { id: 2, label: 'Children Enrolled', value: '142' },
+      { id: 3, label: 'Visits This Week', value: '32' },
+      { id: 4, label: 'Reports Pending', value: '7' },
+    ],
+  },
+}

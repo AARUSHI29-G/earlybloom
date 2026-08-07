@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function LandingPage({ onGetStarted }) {
   return (
     <div className="w-full bg-white">
