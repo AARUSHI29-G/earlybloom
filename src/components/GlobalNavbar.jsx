@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export default function GlobalNavbar() {
+export default function GlobalNavbar({ onLogin }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
@@ -14,8 +14,9 @@ export default function GlobalNavbar() {
           <button
             type="button"
             className="flex items-center text-white bg-purple-900 hover:bg-purple-950 font-bold border-none focus:ring-4 focus:ring-purple-500 shadow-md leading-5 rounded-xl text-sm px-3 py-2 focus:outline-none"
+            onClick={onLogin}
           >
-            Get Started
+            Login
             <svg className="ml-2 h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path
                 fillRule="evenodd"
@@ -45,8 +46,8 @@ export default function GlobalNavbar() {
           <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium rounded-xl bg-purple-700 md:space-x-8 md:flex-row md:mt-0 md:bg-transparent">
             <li>
               <a
-                href="#"
-                className="block py-2 px-3 text-white rounded-sm bg-purple-900 md:bg-transparent md:text-white md:p-0"
+                href="#home"
+                className="block py-2 px-3 text-white rounded-sm bg-purple-900 md:bg-transparent md:text-white md:p-0 hover:underline"
                 aria-current="page"
               >
                 Home
@@ -54,24 +55,24 @@ export default function GlobalNavbar() {
             </li>
             <li>
               <a
-                href="#"
-                className="block py-2 px-3 text-white rounded hover:bg-purple-800 md:hover:bg-transparent md:p-0"
+                href="#about"
+                className="block py-2 px-3 text-white rounded hover:bg-purple-800 md:hover:bg-transparent md:p-0 hover:underline"
               >
                 About
               </a>
             </li>
             <li>
               <a
-                href="#"
-                className="block py-2 px-3 text-white rounded hover:bg-purple-800 md:hover:bg-transparent md:p-0"
+                href="#services"
+                className="block py-2 px-3 text-white rounded hover:bg-purple-800 md:hover:bg-transparent md:p-0 hover:underline"
               >
                 Services
               </a>
             </li>
             <li>
               <a
-                href="#"
-                className="block py-2 px-3 text-white rounded hover:bg-purple-800 md:hover:bg-transparent md:p-0"
+                href="#contact"
+                className="block py-2 px-3 text-white rounded hover:bg-purple-800 md:hover:bg-transparent md:p-0 hover:underline"
               >
                 Contact
               </a>
