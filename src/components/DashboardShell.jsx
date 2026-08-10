@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import GlobalNavbar from './GlobalNavbar'
 import { dashboardDefinitions } from '../data/dashboardConfig'
@@ -8,6 +8,13 @@ export default function DashboardShell({ currentUser, onLogout }) {
   const navigate = useNavigate()
   const config = dashboardDefinitions[role]
   const activeSection = section || 'profile'
+  const [selectedChildId, setSelectedChildId] = useState(config?.children?.[0]?.id ?? null)
+
+  useEffect(() => {
+    if (role === 'parent' && config?.children?.length) {
+      setSelectedChildId(config.children[0].id)
+    }
+  }, [role, config?.children?.length])
 
   useEffect(() => {
     if (!config) return
@@ -218,13 +225,37 @@ export default function DashboardShell({ currentUser, onLogout }) {
             </div>
           </section>
         )
-      case 'milestone':
+      case 'milestone': {
+        const selectedChild = config.children?.find((child) => child.id === selectedChildId) || config.children?.[0]
+        const childReport = config.childReports?.find((report) => report.childId === selectedChild?.id)
+
         return (
           <section className="space-y-6">
             <div className="rounded-3xl bg-white p-8 shadow-sm border border-gray-200">
               <h1 className="text-3xl font-bold text-purple-900">Milestone Tracker</h1>
               <p className="mt-2 text-gray-600">Track your child’s progress toward development goals.</p>
             </div>
+
+            <div className="rounded-3xl bg-white p-8 shadow-sm border border-gray-200">
+              <label className="block text-sm font-semibold text-gray-700">Select Child</label>
+              <select
+                value={selectedChild?.id ?? ''}
+                onChange={(e) => setSelectedChildId(Number(e.target.value))}
+                className="mt-3 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 focus:border-purple-500 focus:ring-purple-100"
+              >
+                {config.children.map((child) => (
+                  <option key={child.id} value={child.id}>
+                    {child.name}
+                  </option>
+                ))}
+              </select>
+
+              <div className="mt-6 rounded-3xl bg-purple-50 p-6 text-sm text-purple-900">
+                <h2 className="text-xl font-semibold text-purple-900">{selectedChild?.name}'s Report</h2>
+                <p className="mt-3 text-gray-600">{childReport?.summary ?? 'Select a child to view their milestone report.'}</p>
+              </div>
+            </div>
+
             <div className="grid gap-6 lg:grid-cols-3">
               {config.milestones.map((item) => (
                 <div key={item.id} className="rounded-3xl bg-white p-6 shadow-sm border border-gray-200">
@@ -238,6 +269,7 @@ export default function DashboardShell({ currentUser, onLogout }) {
             </div>
           </section>
         )
+      }
       case 'resources':
         return (
           <section className="space-y-6">
