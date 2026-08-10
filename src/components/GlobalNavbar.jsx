@@ -17,6 +17,7 @@ const navConfigurations = {
   parent: {
     logoSubtitle: 'Parent',
     links: [
+      { key: 'overview', label: 'Overview', to: '/dashboard/parent/overview' },
       { key: 'profile', label: 'Profile', to: '/dashboard/parent/profile' },
       { key: 'my-children', label: 'My Children', to: '/dashboard/parent/my-children' },
       { key: 'milestone', label: 'Milestone', to: '/dashboard/parent/milestone' },
@@ -32,6 +33,7 @@ const navConfigurations = {
   volunteer: {
     logoSubtitle: 'Volunteer',
     links: [
+      { key: 'overview', label: 'Overview', to: '/dashboard/volunteer/overview' },
       { key: 'profile', label: 'Profile', to: '/dashboard/volunteer/profile' },
       { key: 'my-visits', label: 'My Visits', to: '/dashboard/volunteer/my-visits' },
       { key: 'reports', label: 'Reports', to: '/dashboard/volunteer/reports' },
@@ -46,6 +48,7 @@ const navConfigurations = {
   admin: {
     logoSubtitle: 'Admin',
     links: [
+      { key: 'overview', label: 'Overview', to: '/dashboard/admin/overview' },
       { key: 'profile', label: 'Profile', to: '/dashboard/admin/profile' },
       { key: 'children', label: 'Children', to: '/dashboard/admin/children' },
       { key: 'volunteers', label: 'Volunteers', to: '/dashboard/admin/volunteers' },

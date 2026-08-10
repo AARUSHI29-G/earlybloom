@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import GlobalNavbar from './components/GlobalNavbar'
 import Landing from './pages/Landing'
 import LoginForm from './pages/Login'
+import Signup from './pages/signup'
 import DashboardShell from './components/DashboardShell'
 
 function RedirectToProfile({ currentUser }) {
@@ -19,6 +20,7 @@ export default function App() {
 
   const handleLoginSuccess = (user) => {
     setCurrentUser(user)
+    navigate(`/dashboard/${user.role}/profile`, { replace: true })
   }
 
   const handleLogout = () => {
@@ -35,7 +37,24 @@ export default function App() {
             <div className="scroll-smooth">
               <GlobalNavbar page="landing" />
               <div className="pt-20 block">
-                <Landing onGetStarted={() => navigate('/login')} />
+                <Landing onGetStarted={() => navigate('/signup')} />
+              </div>
+            </div>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <div className="min-h-screen flex flex-col items-center justify-center bg-purple-50 p-6 relative">
+              <button
+                onClick={() => navigate('/')}
+                className="absolute top-6 right-6 bg-purple-700 hover:bg-purple-900 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-md cursor-pointer"
+              >
+                ← Back to Homepage
+              </button>
+
+              <div className="bg-white p-6 rounded-2xl shadow-2xl border border-gray-100">
+                <Signup onBackToLogin={() => navigate('/login')} />
               </div>
             </div>
           }

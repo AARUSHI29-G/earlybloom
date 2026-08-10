@@ -3,6 +3,7 @@ export const dashboardDefinitions = {
     title: 'Volunteer Dashboard',
     subtitle: 'Track visits, upload reports, and stay connected to your community impact.',
     links: [
+      { key: 'overview', label: 'Overview', path: '/dashboard/volunteer/overview' },
       { key: 'profile', label: 'Profile', path: '/dashboard/volunteer/profile' },
       { key: 'my-visits', label: 'My Visits', path: '/dashboard/volunteer/my-visits' },
       { key: 'reports', label: 'Reports', path: '/dashboard/volunteer/reports' },
@@ -36,6 +37,12 @@ export const dashboardDefinitions = {
       { id: 2, child: 'Ravi', feedback: 'Focused on nutrition counseling and daily routine check-in.', date: '2026-08-12' },
       { id: 3, child: 'Mira', feedback: 'Strong participation from family. Recommended follow-up in two weeks.', date: '2026-08-14' },
     ],
+    analytics: [
+      { id: 1, label: 'Upcoming Visits', value: '3' },
+      { id: 2, label: 'Completed Visits', value: '12' },
+      { id: 3, label: 'Reports Submitted', value: '8' },
+      { id: 4, label: 'Unread Notifications', value: '2' },
+    ],
     achievements: [
       { id: 1, title: '10 Visits Completed', details: 'Successfully completed ten community visits this month.' },
       { id: 2, title: 'Trusted Volunteer', details: 'Received a "Trusted Volunteer" badge for consistent reporting.' },
@@ -52,6 +59,7 @@ export const dashboardDefinitions = {
     title: 'Parent Dashboard',
     subtitle: 'Monitor your children’s progress, milestones, and upcoming family support sessions.',
     links: [
+      { key: 'overview', label: 'Overview', path: '/dashboard/parent/overview' },
       { key: 'profile', label: 'Profile', path: '/dashboard/parent/profile' },
       { key: 'my-children', label: 'My Children', path: '/dashboard/parent/my-children' },
       { key: 'milestone', label: 'Milestone', path: '/dashboard/parent/milestone' },
@@ -72,6 +80,10 @@ export const dashboardDefinitions = {
     children: [
       { id: 1, name: 'Aarav', age: '4 years', milestone: 'Speech development', status: 'On track' },
       { id: 2, name: 'Diya', age: '3 years', milestone: 'Fine motor skills', status: 'Needs review' },
+    ],
+    childReports: [
+      { id: 1, childId: 1, summary: 'Aarav is progressing steadily in speech development. Continue daily storytelling and naming games to support expressive language.' },
+      { id: 2, childId: 2, summary: 'Diya needs more fine motor play sessions. Focus on drawing, beading, and sensory activities to improve hand coordination.' },
     ],
     milestones: [
       { id: 1, title: 'Language Check', progress: 80, notes: 'Completed early language prompts and storytelling routine.' },
@@ -95,6 +107,12 @@ export const dashboardDefinitions = {
     notifications: [
       { id: 1, title: 'Session confirmed', body: 'Your next home visit is scheduled for Monday at 11:00 AM.', viewed: true },
       { id: 2, title: 'New child update', body: 'Aarav’s growth chart has been refreshed by the field worker.', viewed: false },
+    ],
+    analytics: [
+      { id: 1, label: 'Children', value: '2' },
+      { id: 2, label: 'Upcoming Visits', value: '2' },
+      { id: 3, label: 'Milestones Active', value: '3' },
+      { id: 4, label: 'Unread Notifications', value: '1' },
     ],
   },
   admin: {

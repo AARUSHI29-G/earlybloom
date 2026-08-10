@@ -27,7 +27,10 @@ export default function LoginForm({ onLoginSuccess }) {
       // Password Verification
       if (data.password === password) {
         alert(`Welcome back, ${data.username}! 🎉`);
-        onLoginSuccess(data.role); // User role direct App.jsx ko bhej diya
+        onLoginSuccess({
+            username: data.username,
+            role: data.role.toLowerCase().trim()
+        }); // User role direct App.jsx ko bhej diya
       } else {
         alert('Incorrect password! Authentication failed.');
       }
