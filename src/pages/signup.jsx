@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient'; // ◄── Supabase client conne
 export default function Signup({ onBackToLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
   const [role, setRole] = useState('parent'); // Default entry role 'parent'
   const [isLoading, setIsLoading] = useState(false);
 
@@ -17,11 +18,12 @@ export default function Signup({ onBackToLogin }) {
         .from('profiles')
         .insert([
           { 
-            username: username.toLowerCase().trim(), 
-            password: password, 
-            role: role,
-            full_name: username // For now, using username as full name layout fallback
-          }
+                username: username.toLowerCase().trim(), 
+                password: password, 
+                role: role,
+                full_name: username, // For now, using username as full name layout fallback
+                email: email
+              }
         ]);
 
       if (error) {
@@ -61,6 +63,18 @@ export default function Signup({ onBackToLogin }) {
           placeholder="Create password..."
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="border p-2.5 rounded-xl text-sm bg-gray-50 focus:outline-none focus:border-purple-600"
+          required
+        />
+      </div>
+
+      <div className="inputContainer flex flex-col gap-1">
+        <label className="text-xs font-semibold text-gray-500">Email Address</label>
+        <input
+          type="email"
+          placeholder="name@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="border p-2.5 rounded-xl text-sm bg-gray-50 focus:outline-none focus:border-purple-600"
           required
         />
