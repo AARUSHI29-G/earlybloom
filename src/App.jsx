@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import GlobalNavbar from './components/GlobalNavbar'
 import Landing from './pages/Landing'

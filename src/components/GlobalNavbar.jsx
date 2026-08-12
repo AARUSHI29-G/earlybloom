@@ -53,7 +53,6 @@ const navConfigurations = {
       { key: 'children', label: 'Children', to: '/dashboard/admin/children' },
       { key: 'volunteers', label: 'Volunteers', to: '/dashboard/admin/volunteers' },
       { key: 'reports', label: 'Reports', to: '/dashboard/admin/reports' },
-      { key: 'analytics', label: 'Analytics', to: '/dashboard/admin/analytics' },
     ],
     actionLabel: 'Profile',
     actionStyle: 'bg-purple-900 hover:bg-purple-950',

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import GlobalNavbar from './GlobalNavbar'
-import { dashboardDefinitions } from '../data/dashboardConfig'
+import { dashboardDefinitions, overviewMetrics } from '../data/dashboardConfig'
 
 export default function DashboardShell({ currentUser, onLogout }) {
   const { role, section } = useParams()
@@ -9,12 +9,6 @@ export default function DashboardShell({ currentUser, onLogout }) {
   const config = dashboardDefinitions[role]
   const activeSection = section || 'profile'
   const [selectedChildId, setSelectedChildId] = useState(config?.children?.[0]?.id ?? null)
-
-  useEffect(() => {
-    if (role === 'parent' && config?.children?.length) {
-      setSelectedChildId(config.children[0].id)
-    }
-  }, [role, config?.children?.length])
 
   useEffect(() => {
     if (!config) return
@@ -39,84 +33,10 @@ export default function DashboardShell({ currentUser, onLogout }) {
         <p className="mt-2 text-gray-600">{config.subtitle}</p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-3xl bg-white p-8 shadow-sm border border-gray-200">
-          <label className="block text-sm font-semibold text-gray-700">Salutation</label>
-          <input
-            readOnly
-            value={config.profile.salutation}
-            className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
-          />
-          <label className="mt-6 block text-sm font-semibold text-gray-700">Name</label>
-          <input
-            readOnly
-            value={config.profile.name}
-            className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
-          />
-          <label className="mt-6 block text-sm font-semibold text-gray-700">Email</label>
-          <input
-            readOnly
-            value={config.profile.email}
-            className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
-          />
-        </div>
-
-        <div className="rounded-3xl bg-white p-8 shadow-sm border border-gray-200">
-          <label className="block text-sm font-semibold text-gray-700">Address</label>
-          <textarea
-            readOnly
-            value={config.profile.address}
-            rows="4"
-            className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
-          />
-
-          <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700">Pincode</label>
-              <input
-                readOnly
-                value={config.profile.pincode}
-                className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700">Country</label>
-              <input
-                readOnly
-                value={config.profile.country}
-                className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
-              />
-            </div>
-          </div>
-
-          <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700">State</label>
-              <input
-                readOnly
-                value={config.profile.state}
-                className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700">City</label>
-              <input
-                readOnly
-                value={config.profile.city}
-                className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
-              />
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => alert('Profile saved in demo mode.')}
-            className="mt-8 w-full rounded-2xl bg-purple-700 px-6 py-3 text-sm font-bold text-white shadow-lg hover:bg-purple-800"
-          >
-            Save Changes
-          </button>
-        </div>
-      </div>
+      <EditableProfileCard
+        key={role}
+        profile={config.profile}
+      />
     </section>
   )
 
@@ -206,6 +126,23 @@ export default function DashboardShell({ currentUser, onLogout }) {
             </div>
           </section>
         )
+      case 'overview':
+        return (
+          <section className="space-y-6">
+            <div className="rounded-3xl bg-white p-8 shadow-sm border border-gray-200">
+              <h1 className="text-3xl font-bold text-purple-900">{config.title} Overview</h1>
+              <p className="mt-2 text-gray-600">A quick snapshot of the role’s current activity and progress.</p>
+            </div>
+            <div className="grid gap-6 lg:grid-cols-4">
+              {(overviewMetrics[role] || config.analytics || []).map((metric) => (
+                <div key={metric.id} className="rounded-3xl bg-purple-50 p-6 shadow-sm border border-purple-100">
+                  <p className="text-sm uppercase tracking-[0.24em] text-purple-700">{metric.label}</p>
+                  <p className="mt-4 text-4xl font-bold text-purple-900">{metric.value}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )
       case 'my-children':
         return (
           <section className="space-y-6">
@@ -228,6 +165,7 @@ export default function DashboardShell({ currentUser, onLogout }) {
       case 'milestone': {
         const selectedChild = config.children?.find((child) => child.id === selectedChildId) || config.children?.[0]
         const childReport = config.childReports?.find((report) => report.childId === selectedChild?.id)
+        const selectedMilestones = childReport?.milestones || config.milestones
 
         return (
           <section className="space-y-6">
@@ -257,7 +195,7 @@ export default function DashboardShell({ currentUser, onLogout }) {
             </div>
 
             <div className="grid gap-6 lg:grid-cols-3">
-              {config.milestones.map((item) => (
+              {selectedMilestones.map((item) => (
                 <div key={item.id} className="rounded-3xl bg-white p-6 shadow-sm border border-gray-200">
                   <h2 className="text-xl font-semibold text-purple-900">{item.title}</h2>
                   <div className="mt-3 rounded-2xl bg-purple-50 p-4 text-sm text-purple-900">
@@ -366,6 +304,91 @@ export default function DashboardShell({ currentUser, onLogout }) {
         </div>
         {renderSection()}
       </main>
+    </div>
+  )
+}
+
+function EditableProfileCard({ profile }) {
+  const [draft, setDraft] = useState(profile)
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-2">
+      <div className="rounded-3xl bg-white p-8 shadow-sm border border-gray-200">
+        <label className="block text-sm font-semibold text-gray-700">Salutation</label>
+        <input
+          value={draft.salutation}
+          onChange={(event) => setDraft((current) => ({ ...current, salutation: event.target.value }))}
+          className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
+        />
+        <label className="mt-6 block text-sm font-semibold text-gray-700">Name</label>
+        <input
+          value={draft.name}
+          onChange={(event) => setDraft((current) => ({ ...current, name: event.target.value }))}
+          className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
+        />
+        <label className="mt-6 block text-sm font-semibold text-gray-700">Email</label>
+        <input
+          value={draft.email}
+          onChange={(event) => setDraft((current) => ({ ...current, email: event.target.value }))}
+          className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
+        />
+      </div>
+
+      <div className="rounded-3xl bg-white p-8 shadow-sm border border-gray-200">
+        <label className="block text-sm font-semibold text-gray-700">Address</label>
+        <textarea
+          value={draft.address}
+          onChange={(event) => setDraft((current) => ({ ...current, address: event.target.value }))}
+          rows="4"
+          className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
+        />
+
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">Pincode</label>
+            <input
+              value={draft.pincode}
+              onChange={(event) => setDraft((current) => ({ ...current, pincode: event.target.value }))}
+              className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">Country</label>
+            <input
+              value={draft.country}
+              onChange={(event) => setDraft((current) => ({ ...current, country: event.target.value }))}
+              className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
+            />
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">State</label>
+            <input
+              value={draft.state}
+              onChange={(event) => setDraft((current) => ({ ...current, state: event.target.value }))}
+              className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">City</label>
+            <input
+              value={draft.city}
+              onChange={(event) => setDraft((current) => ({ ...current, city: event.target.value }))}
+              className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
+            />
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => alert(`Profile saved in demo mode for ${draft.name}.`)}
+          className="mt-8 w-full rounded-2xl bg-purple-700 px-6 py-3 text-sm font-bold text-white shadow-lg hover:bg-purple-800"
+        >
+          Save Changes
+        </button>
+      </div>
     </div>
   )
 }

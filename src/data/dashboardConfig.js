@@ -80,10 +80,50 @@ export const dashboardDefinitions = {
     children: [
       { id: 1, name: 'Aarav', age: '4 years', milestone: 'Speech development', status: 'On track' },
       { id: 2, name: 'Diya', age: '3 years', milestone: 'Fine motor skills', status: 'Needs review' },
+      { id: 3, name: 'Kabir', age: '2 years', milestone: 'Nutrition focus', status: 'On track' },
+      { id: 4, name: 'Meera', age: '5 years', milestone: 'Play and bonding', status: 'On track' },
     ],
     childReports: [
-      { id: 1, childId: 1, summary: 'Aarav is progressing steadily in speech development. Continue daily storytelling and naming games to support expressive language.' },
-      { id: 2, childId: 2, summary: 'Diya needs more fine motor play sessions. Focus on drawing, beading, and sensory activities to improve hand coordination.' },
+      {
+        id: 1,
+        childId: 1,
+        summary: 'Aarav is progressing steadily in speech development. Continue daily storytelling and naming games to support expressive language.',
+        milestones: [
+          { id: 1, title: 'Language Check', progress: 86, notes: 'Uses full sentences during guided story time and names familiar objects confidently.' },
+          { id: 2, title: 'Nutrition Support', progress: 72, notes: 'Meal routine is stable. Add more iron-rich foods and track appetite after school.' },
+          { id: 3, title: 'Play & Bonding', progress: 58, notes: 'Enjoys shared reading and pretend play. Encourage turn-taking games twice a week.' },
+        ],
+      },
+      {
+        id: 2,
+        childId: 2,
+        summary: 'Diya needs more fine motor play sessions. Focus on drawing, beading, and sensory activities to improve hand coordination.',
+        milestones: [
+          { id: 1, title: 'Language Check', progress: 64, notes: 'Responds to simple prompts and repeats short phrases with support.' },
+          { id: 2, title: 'Nutrition Support', progress: 69, notes: 'Balanced meals are improving. Keep offering small portions frequently through the day.' },
+          { id: 3, title: 'Play & Bonding', progress: 83, notes: 'Loves puzzle play and songs with caregiver. Add daily drawing for hand strength.' },
+        ],
+      },
+      {
+        id: 3,
+        childId: 3,
+        summary: 'Kabir is improving in nutrition routines. Family should continue feeding schedule and hydration tracking.',
+        milestones: [
+          { id: 1, title: 'Language Check', progress: 52, notes: 'Recognizes common words and responds to name with support.' },
+          { id: 2, title: 'Nutrition Support', progress: 91, notes: 'Strong meal adherence. Maintain protein intake and monitor weight monthly.' },
+          { id: 3, title: 'Play & Bonding', progress: 61, notes: 'Responds well to songs and peekaboo games. Continue short play bursts daily.' },
+        ],
+      },
+      {
+        id: 4,
+        childId: 4,
+        summary: 'Meera shows strong social engagement. Keep pairing play activities with story-based conversations.',
+        milestones: [
+          { id: 1, title: 'Language Check', progress: 78, notes: 'Asks simple questions and enjoys naming colors and shapes during play.' },
+          { id: 2, title: 'Nutrition Support', progress: 74, notes: 'Healthy eating is consistent. Introduce more fruits and note any skipped meals.' },
+          { id: 3, title: 'Play & Bonding', progress: 88, notes: 'Very active in cooperative games. Continue family play routines each evening.' },
+        ],
+      },
     ],
     milestones: [
       { id: 1, title: 'Language Check', progress: 80, notes: 'Completed early language prompts and storytelling routine.' },
@@ -157,4 +197,25 @@ export const dashboardDefinitions = {
       { id: 4, label: 'Reports Pending', value: '7' },
     ],
   },
+}
+
+export const overviewMetrics = {
+  volunteer: [
+    { id: 1, label: 'Upcoming Visits', value: '3' },
+    { id: 2, label: 'Completed Visits', value: '12' },
+    { id: 3, label: 'Reports Submitted', value: '8' },
+    { id: 4, label: 'Unread Notifications', value: '2' },
+  ],
+  parent: [
+    { id: 1, label: 'Children', value: '4' },
+    { id: 2, label: 'Upcoming Visits', value: '2' },
+    { id: 3, label: 'Milestones Active', value: '3' },
+    { id: 4, label: 'Unread Notifications', value: '1' },
+  ],
+  admin: [
+    { id: 1, label: 'Active Volunteers', value: '18' },
+    { id: 2, label: 'Children Enrolled', value: '142' },
+    { id: 3, label: 'Visits This Week', value: '32' },
+    { id: 4, label: 'Reports Pending', value: '7' },
+  ],
 }
