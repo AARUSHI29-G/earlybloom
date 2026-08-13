@@ -159,9 +159,11 @@ export const dashboardDefinitions = {
     title: 'Admin Dashboard',
     subtitle: 'Oversee volunteers, children, reports, and program analytics from one control center.',
     links: [
+      { key: 'overview', label: 'Overview', path: '/dashboard/admin/overview' },
       { key: 'profile', label: 'Profile', path: '/dashboard/admin/profile' },
       { key: 'children', label: 'Children', path: '/dashboard/admin/children' },
       { key: 'volunteers', label: 'Volunteers', path: '/dashboard/admin/volunteers' },
+      { key: 'donation', label: 'Donation & Grants', path: '/dashboard/admin/donation' },
       { key: 'reports', label: 'Reports', path: '/dashboard/admin/reports' },
       { key: 'analytics', label: 'Analytics', path: '/dashboard/admin/analytics' },
     ],
@@ -176,14 +178,14 @@ export const dashboardDefinitions = {
       city: 'Bengaluru',
     },
     children: [
-      { id: 1, name: 'Aarav', age: '4', center: 'Cluster 3', status: 'Active' },
-      { id: 2, name: 'Diya', age: '3', center: 'Cluster 5', status: 'Active' },
-      { id: 3, name: 'Mira', age: '5', center: 'Community Center', status: 'Needs review' },
+      { id: 1, name: 'Aarav', age: '4', center: 'Cluster 3', status: 'Active', parent: 'Ananya Verma', lastVisit: '2026-08-02', nextVisit: '2026-08-11', attendancePct: 92, volunteerFeedback: 'Responsive family and active participation.' },
+      { id: 2, name: 'Diya', age: '3', center: 'Cluster 5', status: 'Active', parent: 'Rajesh Singh', lastVisit: '2026-08-04', nextVisit: '2026-08-13', attendancePct: 78, volunteerFeedback: 'Needs more fine motor practice at home.' },
+      { id: 3, name: 'Mira', age: '5', center: 'Community Center', status: 'Needs review', parent: 'Sanya Kumar', lastVisit: '2026-07-28', nextVisit: '2026-08-20', attendancePct: 65, volunteerFeedback: 'Missed two sessions; follow-up required.' },
     ],
     volunteers: [
-      { id: 1, name: 'Priya Sharma', area: 'Bengaluru Rural', active: true },
-      { id: 2, name: 'Rohit Singh', area: 'Mysuru', active: true },
-      { id: 3, name: 'Neha Patel', area: 'Tumakuru', active: false },
+      { id: 1, name: 'Priya Sharma', area: 'Bengaluru Rural', active: true, lastVisit: '2026-08-10', feedback: 'Good engagement; caregiver practiced activities.' },
+      { id: 2, name: 'Rohit Singh', area: 'Mysuru', active: true, lastVisit: '2026-08-08', feedback: 'Covered nutrition counseling and updated growth chart.' },
+      { id: 3, name: 'Neha Patel', area: 'Tumakuru', active: false, lastVisit: '2026-07-20', feedback: 'On leave for July; returns next month.' },
     ],
     reports: [
       { id: 1, title: 'Monthly Impact', summary: '25 new families reached this month across three districts.', date: '2026-08-01' },
@@ -196,6 +198,21 @@ export const dashboardDefinitions = {
       { id: 3, label: 'Visits This Week', value: '32' },
       { id: 4, label: 'Reports Pending', value: '7' },
     ],
+    notifications: [
+      { id: 1, title: 'New donation received', body: 'A donation of $2,000 has been recorded for the Nutrition Campaign.', viewed: false },
+      { id: 2, title: 'Volunteer meeting scheduled', body: 'All-staff coordination meeting on Friday at 3:00 PM.', viewed: false },
+      { id: 3, title: 'Report pending approval', body: 'Child outcomes report for Cluster 5 awaiting review.', viewed: true },
+    ],
+    donations: {
+      incomingFunds: 12500,
+      campaigns: [
+        { id: 1, title: 'Nutrition Drive', raised: 8200, goal: 15000, donors: 42, corporate: 'Sunrise Foods' },
+        { id: 2, title: 'Learning Kits', raised: 4300, goal: 5000, donors: 18, corporate: null },
+      ],
+      sponsorships: [
+        { id: 1, name: 'Sunrise Foods', amount: 5000, purpose: 'Nutrition Drive' },
+      ],
+    },
   },
 }
 

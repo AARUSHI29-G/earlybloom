@@ -2,12 +2,16 @@ import { useEffect, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import GlobalNavbar from './GlobalNavbar'
 import { dashboardDefinitions, overviewMetrics } from '../data/dashboardConfig'
+import ChildrenTab from './ChildrenTab'
+import VolunteersTab from './VolunteersTab'
+import DonationTracker from './DonationTracker'
 
 export default function DashboardShell({ currentUser, onLogout }) {
   const { role, section } = useParams()
   const navigate = useNavigate()
   const config = dashboardDefinitions[role]
-  const activeSection = section || 'profile'
+  const defaultSection = role === 'admin' ? 'overview' : 'profile'
+  const activeSection = section || defaultSection
   const [selectedChildId, setSelectedChildId] = useState(config?.children?.[0]?.id ?? null)
 
   useEffect(() => {
@@ -226,42 +230,11 @@ export default function DashboardShell({ currentUser, onLogout }) {
           </section>
         )
       case 'children':
-        return (
-          <section className="space-y-6">
-            <div className="rounded-3xl bg-white p-8 shadow-sm border border-gray-200">
-              <h1 className="text-3xl font-bold text-purple-900">Children Overview</h1>
-              <p className="mt-2 text-gray-600">Manage active cases and follow-ups for enrolled children.</p>
-            </div>
-            <div className="grid gap-6 lg:grid-cols-3">
-              {config.children.map((child) => (
-                <div key={child.id} className="rounded-3xl bg-white p-6 shadow-sm border border-gray-200">
-                  <h2 className="text-xl font-semibold text-purple-900">{child.name}</h2>
-                  <p className="mt-2 text-gray-600">Age: {child.age}</p>
-                  <p className="mt-1 text-gray-600">Center: {child.center}</p>
-                  <p className="mt-1 text-gray-600">Status: {child.status}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-        )
+        return <ChildrenTab childrenData={config.children} />
       case 'volunteers':
-        return (
-          <section className="space-y-6">
-            <div className="rounded-3xl bg-white p-8 shadow-sm border border-gray-200">
-              <h1 className="text-3xl font-bold text-purple-900">Volunteer Team</h1>
-              <p className="mt-2 text-gray-600">Review active volunteer coverage and availability.</p>
-            </div>
-            <div className="grid gap-6 lg:grid-cols-3">
-              {config.volunteers.map((item) => (
-                <div key={item.id} className="rounded-3xl bg-white p-6 shadow-sm border border-gray-200">
-                  <h2 className="text-xl font-semibold text-purple-900">{item.name}</h2>
-                  <p className="mt-2 text-gray-600">Area: {item.area}</p>
-                  <p className="mt-1 text-gray-600">Status: {item.active ? 'Active' : 'Inactive'}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-        )
+        return <VolunteersTab volunteers={config.volunteers} />
+      case 'donation':
+        return <DonationTracker donations={config.donations} />
       case 'analytics':
         return (
           <section className="space-y-6">
@@ -302,7 +275,38 @@ export default function DashboardShell({ currentUser, onLogout }) {
             </Link>
           ))}
         </div>
-        {renderSection()}
+
+        <div className="grid gap-6 lg:grid-cols-4">
+          <div className="lg:col-span-3">{renderSection()}</div>
+
+          {(role === 'admin' && activeSection === 'overview') ? (
+            <aside className="lg:col-span-1">
+              <div className="rounded-3xl bg-white p-6 shadow-sm border border-gray-200 mb-4">
+                <h3 className="text-lg font-semibold text-purple-900">Notifications</h3>
+                <p className="mt-1 text-sm text-gray-600">Recent activity and alerts</p>
+                <div className="mt-4 space-y-3">
+                  {(config.notifications || []).slice(0, 6).map((n) => (
+                    <div key={n.id} className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="text-sm font-semibold text-gray-900">{n.title}</div>
+                        <div className="text-xs text-gray-600">{n.body}</div>
+                      </div>
+                      <div className={`text-xs px-2 py-1 rounded-full ${n.viewed ? 'bg-purple-100 text-purple-800' : 'bg-purple-900 text-white'}`}>{n.viewed ? 'Viewed' : 'New'}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-3xl bg-white p-4 shadow-sm border border-gray-200">
+                <h3 className="text-lg font-semibold text-purple-900">Quick Actions</h3>
+                <div className="mt-4 flex flex-col gap-3">
+                  <button className="rounded-2xl bg-purple-900 text-white px-4 py-2">Schedule a Meeting</button>
+                  <button className="rounded-2xl bg-white border border-gray-200 px-4 py-2 text-purple-900">Create Campaign</button>
+                </div>
+              </div>
+            </aside>
+          ) : null}
+        </div>
       </main>
     </div>
   )

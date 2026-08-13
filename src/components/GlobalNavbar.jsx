@@ -52,6 +52,7 @@ const navConfigurations = {
       { key: 'profile', label: 'Profile', to: '/dashboard/admin/profile' },
       { key: 'children', label: 'Children', to: '/dashboard/admin/children' },
       { key: 'volunteers', label: 'Volunteers', to: '/dashboard/admin/volunteers' },
+      { key: 'donation', label: 'Donation & Grants', to: '/dashboard/admin/donation' },
       { key: 'reports', label: 'Reports', to: '/dashboard/admin/reports' },
     ],
     actionLabel: 'Profile',
