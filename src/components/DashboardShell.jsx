@@ -2,14 +2,20 @@ import { useEffect, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import GlobalNavbar from './GlobalNavbar'
 import { dashboardDefinitions, overviewMetrics } from '../data/dashboardConfig'
+import { db } from '../lib/db'
 import ChildrenTab from './ChildrenTab'
 import VolunteersTab from './VolunteersTab'
 import DonationTracker from './DonationTracker'
+import Modal from './Modal'
 
 export default function DashboardShell({ currentUser, onLogout }) {
   const { role, section } = useParams()
   const navigate = useNavigate()
   const config = dashboardDefinitions[role]
+  const [notifications, setNotifications] = useState(config?.notifications || [])
+  const [meetings, setMeetings] = useState([])
+  const [scheduleOpen, setScheduleOpen] = useState(false)
+  const [scheduleForm, setScheduleForm] = useState({ date: '', note: '', title: '' })
   const defaultSection = role === 'admin' ? 'overview' : 'profile'
   const activeSection = section || defaultSection
   const [selectedChildId, setSelectedChildId] = useState(config?.children?.[0]?.id ?? null)
@@ -20,7 +26,17 @@ export default function DashboardShell({ currentUser, onLogout }) {
     if (!sectionExists) {
       navigate(config.links[0].path, { replace: true })
     }
-  }, [activeSection, config, navigate])
+
+    // load persisted notifications and meetings
+    let mounted = true
+    db.getNotifications(role).then((list) => {
+      if (mounted && list) setNotifications(list)
+    })
+    db.getMeetings().then((m) => {
+      if (mounted && m) setMeetings(m)
+    })
+    return () => { mounted = false }
+  }, [activeSection, config, navigate, role])
 
   if (!config || !currentUser) {
     return <Navigate to="/login" replace />
@@ -144,6 +160,18 @@ export default function DashboardShell({ currentUser, onLogout }) {
                   <p className="mt-4 text-4xl font-bold text-purple-900">{metric.value}</p>
                 </div>
               ))}
+            </div>
+
+            <div className="mt-6 grid gap-4">
+              <h2 className="text-lg font-semibold text-gray-900">Upcoming Meetings</h2>
+              <div className="space-y-3">
+                {meetings.slice(0,5).map((m) => (
+                  <div key={m.id} className="rounded-lg bg-yellow-50 p-3 border border-yellow-100">
+                    <div className="font-semibold">{m.title || 'Meeting'}</div>
+                    <div className="text-sm text-gray-700">Date: {m.date} • Note: {m.note}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
         )
@@ -285,13 +313,16 @@ export default function DashboardShell({ currentUser, onLogout }) {
                 <h3 className="text-lg font-semibold text-purple-900">Notifications</h3>
                 <p className="mt-1 text-sm text-gray-600">Recent activity and alerts</p>
                 <div className="mt-4 space-y-3">
-                  {(config.notifications || []).slice(0, 6).map((n) => (
+                  {notifications.slice(0, 6).map((n) => (
                     <div key={n.id} className="flex items-start justify-between gap-3">
                       <div>
                         <div className="text-sm font-semibold text-gray-900">{n.title}</div>
                         <div className="text-xs text-gray-600">{n.body}</div>
                       </div>
-                      <div className={`text-xs px-2 py-1 rounded-full ${n.viewed ? 'bg-purple-100 text-purple-800' : 'bg-purple-900 text-white'}`}>{n.viewed ? 'Viewed' : 'New'}</div>
+                      <div className="flex items-center gap-2">
+                        <button onClick={async () => { await db.markViewed(n.id); setNotifications((s) => s.map((x) => x.id === n.id ? { ...x, viewed: true } : x)) }} className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-800">View</button>
+                        <button onClick={async () => { await db.deleteNotification(n.id); setNotifications((s) => s.filter((x) => x.id !== n.id)) }} className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700">Delete</button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -300,13 +331,27 @@ export default function DashboardShell({ currentUser, onLogout }) {
               <div className="rounded-3xl bg-white p-4 shadow-sm border border-gray-200">
                 <h3 className="text-lg font-semibold text-purple-900">Quick Actions</h3>
                 <div className="mt-4 flex flex-col gap-3">
-                  <button className="rounded-2xl bg-purple-900 text-white px-4 py-2">Schedule a Meeting</button>
-                  <button className="rounded-2xl bg-white border border-gray-200 px-4 py-2 text-purple-900">Create Campaign</button>
-                </div>
+                    <button onClick={() => setScheduleOpen(true)} className="rounded-2xl bg-purple-900 text-white px-4 py-2">Schedule a Meeting</button>
+                    <button className="rounded-2xl bg-white border border-gray-200 px-4 py-2 text-purple-900">Create Campaign</button>
+                  </div>
               </div>
             </aside>
           ) : null}
         </div>
+        <Modal open={scheduleOpen} onClose={() => setScheduleOpen(false)} title={scheduleForm.title || 'Schedule Meeting'}>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">Title</label>
+            <input value={scheduleForm.title} onChange={(e) => setScheduleForm((s) => ({ ...s, title: e.target.value }))} className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-2" />
+            <label className="mt-4 block text-sm font-semibold text-gray-700">Date</label>
+            <input type="date" value={scheduleForm.date} onChange={(e) => setScheduleForm((s) => ({ ...s, date: e.target.value }))} className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-2" />
+            <label className="mt-4 block text-sm font-semibold text-gray-700">Note</label>
+            <textarea value={scheduleForm.note} onChange={(e) => setScheduleForm((s) => ({ ...s, note: e.target.value }))} rows={3} className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-2" />
+            <div className="mt-4 flex gap-2">
+              <button onClick={async () => { const m = await db.addMeeting(scheduleForm); setMeetings((s) => [m, ...s]); setScheduleOpen(false); setScheduleForm({ date: '', note: '', title: '' }) }} className="rounded-2xl bg-purple-900 text-white px-4 py-2">Save</button>
+              <button onClick={() => setScheduleOpen(false)} className="rounded-2xl bg-white border border-gray-200 px-4 py-2">Cancel</button>
+            </div>
+          </div>
+        </Modal>
       </main>
     </div>
   )
