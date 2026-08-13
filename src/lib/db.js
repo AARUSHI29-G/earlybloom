@@ -68,6 +68,8 @@ export const db = {
     const cur = readLS(LS_KEYS.volunteers, [])
     cur.unshift(v)
     writeLS(LS_KEYS.volunteers, cur)
+    // notify UI that a volunteer was added
+    try { window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: 'volunteerAdded', volunteer: v } })) } catch (e) {}
     return v
   },
 
@@ -115,6 +117,8 @@ export const db = {
       children[idx].volunteerId = volunteerId
       writeLS(LS_KEYS.children, children)
     }
+    // notify UI that a child was assigned a volunteer
+    try { window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: 'childAssigned', childId, volunteerId } })) } catch (e) {}
     return true
   },
 }

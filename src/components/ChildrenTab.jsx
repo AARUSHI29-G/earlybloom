@@ -18,6 +18,18 @@ export default function ChildrenTab({ childrenData = [] }) {
     return () => { mounted = false }
   }, [])
 
+  useEffect(() => {
+    const handler = (e) => {
+      const d = e.detail || {}
+      if (d.type === 'childAssigned' || d.type === 'volunteerAdded') {
+        db.getChildren().then((list) => setChildren(list))
+        db.getVolunteers().then((v) => setVolunteers(v))
+      }
+    }
+    window.addEventListener('dataUpdated', handler)
+    return () => window.removeEventListener('dataUpdated', handler)
+  }, [])
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     if (!q) return children

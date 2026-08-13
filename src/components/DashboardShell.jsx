@@ -38,6 +38,16 @@ export default function DashboardShell({ currentUser, onLogout }) {
     return () => { mounted = false }
   }, [activeSection, config, navigate, role])
 
+  useEffect(() => {
+    const handler = (e) => {
+      const d = e.detail || {}
+      setScheduleForm((s) => ({ ...s, title: d.title || '', note: d.note || '', date: d.date || '' , volunteerId: d.volunteerId }))
+      setScheduleOpen(true)
+    }
+    window.addEventListener('openSchedule', handler)
+    return () => window.removeEventListener('openSchedule', handler)
+  }, [])
+
   if (!config || !currentUser) {
     return <Navigate to="/login" replace />
   }
