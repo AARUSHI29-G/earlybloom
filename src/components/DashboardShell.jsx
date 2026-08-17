@@ -14,6 +14,7 @@ export default function DashboardShell({ currentUser, onLogout }) {
   const config = dashboardDefinitions[role]
   const [notifications, setNotifications] = useState(config?.notifications || [])
   const [meetings, setMeetings] = useState([])
+  const [userProfile, setUserProfile] = useState(null)
   const [scheduleOpen, setScheduleOpen] = useState(false)
   const [scheduleForm, setScheduleForm] = useState({ date: '', note: '', title: '' })
   const defaultSection = role === 'admin' ? 'overview' : 'profile'
@@ -35,6 +36,12 @@ export default function DashboardShell({ currentUser, onLogout }) {
     db.getMeetings().then((m) => {
       if (mounted && m) setMeetings(m)
     })
+    // load current user's profile from Supabase
+    if (currentUser?.username) {
+      db.getProfile(currentUser.username).then((p) => {
+        if (mounted) setUserProfile(p)
+      })
+    }
     return () => { mounted = false }
   }, [activeSection, config, navigate, role])
 
@@ -65,7 +72,8 @@ export default function DashboardShell({ currentUser, onLogout }) {
 
       <EditableProfileCard
         key={role}
-        profile={config.profile}
+        profile={userProfile || config.profile}
+        currentUser={currentUser}
       />
     </section>
   )
@@ -220,7 +228,7 @@ export default function DashboardShell({ currentUser, onLogout }) {
               <label className="block text-sm font-semibold text-gray-700">Select Child</label>
               <select
                 value={selectedChild?.id ?? ''}
-                onChange={(e) => setSelectedChildId(Number(e.target.value))}
+                onChange={(e) => setSelectedChildId(e.target.value)}
                 className="mt-3 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 focus:border-purple-500 focus:ring-purple-100"
               >
                 {config.children.map((child) => (
@@ -367,27 +375,61 @@ export default function DashboardShell({ currentUser, onLogout }) {
   )
 }
 
-function EditableProfileCard({ profile }) {
+function EditableProfileCard({ profile, currentUser }) {
   const [draft, setDraft] = useState(profile)
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    setDraft(profile)
+  }, [profile])
+
+  const handleSave = async () => {
+    // username comes from currentUser in App — DashboardShell doesn't pass it here,
+    // but App stores currentUser in state and passes to DashboardShell. We can try
+    // to read username from localStorage or expect profile.email/username to be present.
+    const username = currentUser?.username || profile?.username || profile?.email || null
+    if (!username) return alert('Cannot determine profile username to save.')
+
+    setSaving(true)
+    const attrs = {
+      salutation: draft.salutation,
+      name: draft.name,
+      email: draft.email,
+      address: draft.address,
+      pincode: draft.pincode,
+      country: draft.country,
+      state: draft.state,
+      city: draft.city,
+      updated_at: new Date().toISOString(),
+    }
+
+    const res = await db.updateProfile(username, attrs)
+    setSaving(false)
+    if (res) {
+      alert('Profile updated successfully.')
+    } else {
+      alert('Failed to update profile — check console for details.')
+    }
+  }
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="rounded-3xl bg-white p-8 shadow-sm border border-gray-200">
         <label className="block text-sm font-semibold text-gray-700">Salutation</label>
         <input
-          value={draft.salutation}
+          value={draft?.salutation || ''}
           onChange={(event) => setDraft((current) => ({ ...current, salutation: event.target.value }))}
           className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
         />
         <label className="mt-6 block text-sm font-semibold text-gray-700">Name</label>
         <input
-          value={draft.name}
+          value={draft?.name || ''}
           onChange={(event) => setDraft((current) => ({ ...current, name: event.target.value }))}
           className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
         />
         <label className="mt-6 block text-sm font-semibold text-gray-700">Email</label>
         <input
-          value={draft.email}
+          value={draft?.email || ''}
           onChange={(event) => setDraft((current) => ({ ...current, email: event.target.value }))}
           className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
         />
@@ -396,7 +438,7 @@ function EditableProfileCard({ profile }) {
       <div className="rounded-3xl bg-white p-8 shadow-sm border border-gray-200">
         <label className="block text-sm font-semibold text-gray-700">Address</label>
         <textarea
-          value={draft.address}
+          value={draft?.address || ''}
           onChange={(event) => setDraft((current) => ({ ...current, address: event.target.value }))}
           rows="4"
           className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
@@ -406,7 +448,7 @@ function EditableProfileCard({ profile }) {
           <div>
             <label className="block text-sm font-semibold text-gray-700">Pincode</label>
             <input
-              value={draft.pincode}
+              value={draft?.pincode || ''}
               onChange={(event) => setDraft((current) => ({ ...current, pincode: event.target.value }))}
               className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
             />
@@ -414,7 +456,7 @@ function EditableProfileCard({ profile }) {
           <div>
             <label className="block text-sm font-semibold text-gray-700">Country</label>
             <input
-              value={draft.country}
+              value={draft?.country || ''}
               onChange={(event) => setDraft((current) => ({ ...current, country: event.target.value }))}
               className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
             />
@@ -425,7 +467,7 @@ function EditableProfileCard({ profile }) {
           <div>
             <label className="block text-sm font-semibold text-gray-700">State</label>
             <input
-              value={draft.state}
+              value={draft?.state || ''}
               onChange={(event) => setDraft((current) => ({ ...current, state: event.target.value }))}
               className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
             />
@@ -433,7 +475,7 @@ function EditableProfileCard({ profile }) {
           <div>
             <label className="block text-sm font-semibold text-gray-700">City</label>
             <input
-              value={draft.city}
+              value={draft?.city || ''}
               onChange={(event) => setDraft((current) => ({ ...current, city: event.target.value }))}
               className="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 bg-gray-50"
             />
@@ -442,10 +484,11 @@ function EditableProfileCard({ profile }) {
 
         <button
           type="button"
-          onClick={() => alert(`Profile saved in demo mode for ${draft.name}.`)}
-          className="mt-8 w-full rounded-2xl bg-purple-700 px-6 py-3 text-sm font-bold text-white shadow-lg hover:bg-purple-800"
+          onClick={handleSave}
+          disabled={saving}
+          className="mt-8 w-full rounded-2xl bg-purple-700 px-6 py-3 text-sm font-bold text-white shadow-lg hover:bg-purple-800 disabled:opacity-50"
         >
-          Save Changes
+          {saving ? 'Saving...' : 'Save Changes'}
         </button>
       </div>
     </div>

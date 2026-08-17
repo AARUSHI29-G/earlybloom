@@ -1,124 +1,90 @@
 import { supabase } from '../supabaseClient'
 
-const LS_KEYS = {
-  notifications: 'eb_notifications',
-  volunteers: 'eb_volunteers',
-  children: 'eb_children',
-  meetings: 'eb_meetings',
-}
-
-const trySupabase = async (fn) => {
-  try {
-    if (!supabase) throw new Error('no supabase')
-    return await fn()
-  } catch (err) {
-    return null
-  }
-}
-
-const readLS = (key, fallback = []) => {
-  try {
-    const raw = localStorage.getItem(key)
-    return raw ? JSON.parse(raw) : fallback
-  } catch (e) {
-    return fallback
-  }
-}
-
-const writeLS = (key, val) => localStorage.setItem(key, JSON.stringify(val))
+// Supabase-backed data access for simple app features used by the UI.
+// Exposes promise-based methods the components call so the UI stays decoupled
+// from the storage implementation.
 
 export const db = {
-  async getNotifications(role = 'admin') {
-    const sup = await trySupabase(() => supabase.from('notifications').select('*'))
-    if (sup && sup.data) return sup.data
-    return readLS(LS_KEYS.notifications, [])
-  },
-  async addNotification(n) {
-    await trySupabase(() => supabase.from('notifications').insert(n))
-    const cur = readLS(LS_KEYS.notifications, [])
-    cur.unshift(n)
-    writeLS(LS_KEYS.notifications, cur)
-    return n
-  },
-  async markViewed(id) {
-    await trySupabase(() => supabase.from('notifications').update({ viewed: true }).eq('id', id))
-    const cur = readLS(LS_KEYS.notifications, [])
-    const idx = cur.findIndex((x) => x.id === id)
-    if (idx >= 0) {
-      cur[idx].viewed = true
-      writeLS(LS_KEYS.notifications, cur)
+  async getNotifications(role) {
+    try {
+      const { data, error } = await supabase.from('notifications').select('*').order('created_at', { ascending: false })
+      if (error) throw error
+      if (!data) return []
+      // allow notifications scoped to a role or global (no role set)
+      return data.filter((n) => !n.role || n.role === role)
+    } catch (err) {
+      console.error('getNotifications error', err)
+      return []
     }
-    return true
   },
+
+  async markViewed(id) {
+    try {
+      const { data, error } = await supabase.from('notifications').update({ viewed: true }).eq('id', id).select().single()
+      if (error) throw error
+      return data
+    } catch (err) {
+      console.error('markViewed error', err)
+      return null
+    }
+  },
+
   async deleteNotification(id) {
-    await trySupabase(() => supabase.from('notifications').delete().eq('id', id))
-    const cur = readLS(LS_KEYS.notifications, [])
-    writeLS(LS_KEYS.notifications, cur.filter((x) => x.id !== id))
-    return true
-  },
-
-  async getVolunteers() {
-    const sup = await trySupabase(() => supabase.from('volunteers').select('*'))
-    if (sup && sup.data) return sup.data
-    return readLS(LS_KEYS.volunteers, [])
-  },
-  async addVolunteer(v) {
-    v.id = Date.now()
-    await trySupabase(() => supabase.from('volunteers').insert(v))
-    const cur = readLS(LS_KEYS.volunteers, [])
-    cur.unshift(v)
-    writeLS(LS_KEYS.volunteers, cur)
-    // notify UI that a volunteer was added
-    try { window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: 'volunteerAdded', volunteer: v } })) } catch (e) {}
-    return v
-  },
-
-  async getChildren() {
-    const sup = await trySupabase(() => supabase.from('children').select('*'))
-    if (sup && sup.data) return sup.data
-    return readLS(LS_KEYS.children, [])
-  },
-  async addChild(c) {
-    c.id = Date.now()
-    await trySupabase(() => supabase.from('children').insert(c))
-    const cur = readLS(LS_KEYS.children, [])
-    cur.unshift(c)
-    writeLS(LS_KEYS.children, cur)
-    return c
-  },
-
-  async sendVolunteerMessage(volunteerId, message) {
-    const note = { id: Date.now(), volunteerId, message, created_at: new Date().toISOString() }
-    await trySupabase(() => supabase.from('messages').insert(note))
-    return note
-  },
-
-  async addMeeting(meeting) {
-    meeting.id = Date.now()
-    await trySupabase(() => supabase.from('meetings').insert(meeting))
-    const cur = readLS(LS_KEYS.meetings, [])
-    cur.unshift(meeting)
-    writeLS(LS_KEYS.meetings, cur)
-    return meeting
+    try {
+      const { error } = await supabase.from('notifications').delete().eq('id', id)
+      if (error) throw error
+      return true
+    } catch (err) {
+      console.error('deleteNotification error', err)
+      return false
+    }
   },
 
   async getMeetings() {
-    const sup = await trySupabase(() => supabase.from('meetings').select('*'))
-    if (sup && sup.data) return sup.data
-    return readLS(LS_KEYS.meetings, [])
+    try {
+      const { data, error } = await supabase.from('meetings').select('*').order('created_at', { ascending: false })
+      if (error) throw error
+      return data || []
+    } catch (err) {
+      console.error('getMeetings error', err)
+      return []
+    }
   },
 
-  // Assign volunteer to child by saving volunteerId on child
-  async assignVolunteerToChild(childId, volunteerId) {
-    await trySupabase(() => supabase.from('children').update({ volunteerId }).eq('id', childId))
-    const children = readLS(LS_KEYS.children, [])
-    const idx = children.findIndex((c) => c.id === childId)
-    if (idx >= 0) {
-      children[idx].volunteerId = volunteerId
-      writeLS(LS_KEYS.children, children)
+  async addMeeting(meeting) {
+    try {
+      const payload = { ...meeting, created_at: new Date().toISOString() }
+      const { data, error } = await supabase.from('meetings').insert(payload).select().single()
+      if (error) throw error
+      return data
+    } catch (err) {
+      console.error('addMeeting error', err)
+      return null
     }
-    // notify UI that a child was assigned a volunteer
-    try { window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: 'childAssigned', childId, volunteerId } })) } catch (e) {}
-    return true
   },
+
+  // Profiles: fetch and update user profile stored in `profiles` table.
+  async getProfile(username) {
+    if (!username) return null
+    try {
+      const { data, error } = await supabase.from('profiles').select('*').eq('username', username).single()
+      if (error) throw error
+      return data || null
+    } catch (err) {
+      console.error('getProfile error', err)
+      return null
+    }
+  },
+
+  async updateProfile(username, attrs) {
+    if (!username) return null
+    try {
+      const { data, error } = await supabase.from('profiles').update(attrs).eq('username', username).select().single()
+      if (error) throw error
+      return data || null
+    } catch (err) {
+      console.error('updateProfile error', err)
+      return null
+    }
+  }
 }
