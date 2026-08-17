@@ -1,3 +1,4 @@
+
 # 🌸 EarlyBloom — Early Childhood NGO Portal
 
 EarlyBloom is a modern, responsive web application designed to bridge the gap between families, verified NGO administrators, and dedicated field volunteers. The platform provides a centralized framework to track early childhood developmental milestones and streamline localized social support deployment.
